@@ -2,6 +2,7 @@
 
 from modelscope.models.base import TorchModel
 from modelscope.models.builder import MODELS
+from modelscope.outputs import OutputKeys
 from modelscope.pipelines.base import Model, Pipeline
 from modelscope.pipelines.builder import PIPELINES
 from modelscope.preprocessors import LoadImage
@@ -92,7 +93,10 @@ class MyCustomPipeline(Pipeline):
         pass
 
     def forward(self, inputs, **forward_params):
-        return super().forward(inputs, **forward_params)
+        out = {
+            OutputKeys.OUTPUT: super().forward(inputs, **forward_params)
+        }
+        return out
 
     def postprocess(self, inputs):
         return inputs
