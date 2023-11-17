@@ -1,6 +1,6 @@
 # Copyright (c) Alibaba, Inc. and its affiliates.
 
-from modelscope.models.base import TorchModel, Config
+from modelscope.models.base import TorchModel
 from modelscope.models.builder import MODELS
 from modelscope.outputs import OutputKeys
 from modelscope.pipelines.base import Model, Pipeline
@@ -104,15 +104,9 @@ class MyCustomPipeline(Pipeline):
 
 if __name__ == "__main__":
     from modelscope.pipelines import pipeline
+
     model = 'damo/cv_stable-diffusion-v2_image-feature'
     pipe = pipeline('feature_extraction', model=model, device='gpu', auto_collate=False, model_revision='v1.0.1')
-
-    img_size = [512, 600]  # w, h
-    t = 261
-    up_ft_index = 2
-    prompt = 'a photo of a girl'
-    ensemble_size = 4
-    seed = 0
-    img1 = 'https://modelscope.oss-cn-beijing.aliyuncs.com/test/images/face_recognition_1.png'
-    out1 = pipe(img1, img_size=img_size, t=t, up_ft_index=up_ft_index, prompt=prompt,
-                ensemble_size=ensemble_size, seed=seed)[OutputKeys.OUTPUT]  # 1*C*H*W
+    out1 = pipe('https://modelscope.oss-cn-beijing.aliyuncs.com/test/images/face_recognition_1.png', img_size=0,
+                t=261, up_ft_index=2, prompt='a photo of a girl', ensemble_size=4, seed=0)[OutputKeys.OUTPUT]  # 1*C*H*W
+    print(out1)

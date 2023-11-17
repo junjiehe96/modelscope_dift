@@ -1,2 +1,2 @@
 Pillow
-diffusers[torch]
+diffusers[torch]==0.20.2
