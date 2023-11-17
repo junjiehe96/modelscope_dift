@@ -1,21 +1,20 @@
 # Copyright (c) Alibaba, Inc. and its affiliates.
 
 from modelscope.models.base import TorchModel
-from modelscope.preprocessors.base import Preprocessor
-from modelscope.pipelines.base import Model, Pipeline, Input
-from modelscope.utils.config import Config
-from modelscope.pipelines.builder import PIPELINES
-from modelscope.preprocessors.builder import PREPROCESSORS
-from modelscope.preprocessors import LoadImage
 from modelscope.models.builder import MODELS
+from modelscope.pipelines.base import Model, Pipeline
+from modelscope.pipelines.builder import PIPELINES
+from modelscope.preprocessors import LoadImage
+from modelscope.preprocessors.base import Preprocessor
+from modelscope.preprocessors.builder import PREPROCESSORS
 
 
-@MODELS.register_module('ms_dift', module_name='my-custom-model')
+@MODELS.register_module('modelscope_dift', module_name='my-custom-model')
 class MyCustomModel(TorchModel):
 
     def __init__(self, model_dir, *args, **kwargs):
         super().__init__(model_dir, *args, **kwargs)
-        from ms_dift.dift_sd import SDFeaturizer
+        from modelscope_dift.dift_sd import SDFeaturizer
         self.model = SDFeaturizer(self.model_dir, device='cuda')
         from torchvision.transforms import PILToTensor
         self.transform = PILToTensor()
@@ -31,7 +30,7 @@ class MyCustomModel(TorchModel):
         return self.model.forward(img_tensor, **forward_params)
 
 
-@PREPROCESSORS.register_module('ms_dift', module_name='my-custom-preprocessor')
+@PREPROCESSORS.register_module('modelscope_dift', module_name='my-custom-preprocessor')
 class MyCustomPreprocessor(Preprocessor):
 
     def __init__(self, *args, **kwargs):
@@ -48,7 +47,7 @@ class MyCustomPreprocessor(Preprocessor):
         return lambda x: x
 
 
-@PIPELINES.register_module('ms_dift', module_name='my-custom-pipeline')
+@PIPELINES.register_module('modelscope_dift', module_name='my-custom-pipeline')
 class MyCustomPipeline(Pipeline):
 
     def __init__(self, model, preprocessor=None, **kwargs):
@@ -98,12 +97,11 @@ class MyCustomPipeline(Pipeline):
     def postprocess(self, inputs):
         return inputs
 
-
 # Tips: usr_config_path is the temporary save configuration location， after upload modelscope hub, it is the model_id
 # usr_config_path = '/tmp/snapdown/'
 # config = Config({
 #     "framework": 'pytorch',
-#     "task": 'ms_dift',
+#     "task": 'modelscope_dift',
 #     "model": {'type': 'my-custom-model'},
 #     "pipeline": {"type": "my-custom-pipeline"},
 #     "allow_remote": True
@@ -115,6 +113,6 @@ class MyCustomPipeline(Pipeline):
 #     from modelscope.pipelines import pipeline
 #     # model = Model.from_pretrained(usr_config_path)
 #     input = "./assets/cat.png"
-#     inference = pipeline('ms_dift', model=usr_config_path)
+#     inference = pipeline('modelscope_dift', model=usr_config_path)
 #     output = inference(input, img_size=0, t=261, up_ft_index=1, prompt='a photo of a cat', ensemble_size=8, seed=0)
 #     print(output)

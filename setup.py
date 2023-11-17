@@ -3,12 +3,11 @@ import os
 import pkg_resources
 from setuptools import setup
 
-
 setup(
-    name='ms_dift',
+    name='modelscope_dift',
     version='0.1.0',
     python_requires='>=3.7.0',
-    packages=['ms_dift'],
+    packages=['modelscope_dift'],
     include_package_data=True,
     install_requires=[
         str(r)

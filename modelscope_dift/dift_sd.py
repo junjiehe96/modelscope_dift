@@ -187,7 +187,8 @@ class OneStepSDPipeline(StableDiffusionPipeline):
 class SDFeaturizer:
     def __init__(self, sd_id='stabilityai/stable-diffusion-2-1', device='cuda'):
         unet = MyUNet2DConditionModel.from_pretrained(sd_id, subfolder="unet", torch_dtype=torch.float16)
-        onestep_pipe = OneStepSDPipeline.from_pretrained(sd_id, unet=unet, safety_checker=None, torch_dtype=torch.float16)
+        onestep_pipe = OneStepSDPipeline.from_pretrained(sd_id, unet=unet, safety_checker=None,
+                                                         torch_dtype=torch.float16)
         onestep_pipe.vae.decoder = None
         onestep_pipe.scheduler = DDIMScheduler.from_pretrained(sd_id, subfolder="scheduler")
         gc.collect()
