@@ -1,6 +1,6 @@
 # Copyright (c) Alibaba, Inc. and its affiliates.
 
-from modelscope.models.base import TorchModel
+from modelscope.models.base import TorchModel, Config
 from modelscope.models.builder import MODELS
 from modelscope.outputs import OutputKeys
 from modelscope.pipelines.base import Model, Pipeline
@@ -23,7 +23,7 @@ class MyCustomModel(TorchModel):
     def forward(self, image, **forward_params):
         img = LoadImage.convert_to_img(image)
         img_size = forward_params.pop("img_size", [768, 768])
-        if not isinstance(img_size, list):
+        if not isinstance(img_size, list) and not isinstance(img_size, tuple):
             img_size = [img_size, img_size]
         if img_size[0] > 0:
             img = img.resize(img_size)
@@ -101,22 +101,18 @@ class MyCustomPipeline(Pipeline):
     def postprocess(self, inputs):
         return inputs
 
-# Tips: usr_config_path is the temporary save configuration location， after upload modelscope hub, it is the model_id
-# usr_config_path = '/tmp/snapdown/'
-# config = Config({
-#     "framework": 'pytorch',
-#     "task": 'feature_extraction',
-#     "model": {'type': 'my-custom-model'},
-#     "pipeline": {"type": "my-custom-pipeline"},
-#     "allow_remote": True
-# })
-# config.dump('/tmp/snapdown/' + 'configuration.json')
 
-# if __name__ == "__main__":
-#     from modelscope.models import Model
-#     from modelscope.pipelines import pipeline
-#     # model = Model.from_pretrained(usr_config_path)
-#     input = "./assets/cat.png"
-#     inference = pipeline('feature_extraction', model=usr_config_path)
-#     output = inference(input, img_size=0, t=261, up_ft_index=1, prompt='a photo of a cat', ensemble_size=8, seed=0)
-#     print(output)
+if __name__ == "__main__":
+    from modelscope.pipelines import pipeline
+    model = 'damo/cv_stable-diffusion-v2_image-feature'
+    pipe = pipeline('feature_extraction', model=model, device='gpu', auto_collate=False, model_revision='v1.0.1')
+
+    img_size = [512, 600]  # w, h
+    t = 261
+    up_ft_index = 2
+    prompt = 'a photo of a girl'
+    ensemble_size = 4
+    seed = 0
+    img1 = 'https://modelscope.oss-cn-beijing.aliyuncs.com/test/images/face_recognition_1.png'
+    out1 = pipe(img1, img_size=img_size, t=t, up_ft_index=up_ft_index, prompt=prompt,
+                ensemble_size=ensemble_size, seed=seed)[OutputKeys.OUTPUT]  # 1*C*H*W
